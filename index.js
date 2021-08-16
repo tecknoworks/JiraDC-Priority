@@ -10,7 +10,7 @@ app.use(bodyParser.raw());
 
 const Priority = require('./models/priority')
 const port = 8085
-var mongoDB = 'mongodb+srv://Damaris:12345@cluster0.gdp4f.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+var mongoDB = 'mongodb+srv://cata:cata@cluster0.wcbqw.mongodb.net/first?retryWrites=true&w=majority'
 mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -21,7 +21,21 @@ app.post('/priority', async (req, res) => {
     await Priority.create(addPriority)
     res.send(newPriority)
 })
-
+app.post('/allPriorities', async (req, res) => {
+    let result = [];
+    console.log(req.body)
+    if (req.body.length) {
+        for (let index = 0; index < req.body.length; index++) {
+            if(req.body[index]!==''){
+                const issue = await Priority.find({ '_id': req.body[index] })
+                result.push(issue[0]);
+            }else{
+                result.push({name:"noPriority"});
+            }
+        }
+    }
+    res.json(result)
+})
 app.get('/priority', async (req, res) =>{
     // const record= await Project.find({'type':req.query.type}).exec()
     const record= await Priority.find({})
